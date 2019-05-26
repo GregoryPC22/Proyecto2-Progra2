@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package domain;
 
 /**
@@ -11,6 +10,7 @@ package domain;
  * @author Fabian
  */
 public class Square {
+
     public String identification;
     private Point pointPosition;
     private int sizeX;
@@ -22,9 +22,10 @@ public class Square {
         this.sizeX = sizeX;
         this.sizeY = sizeY;
     }
-    
+
     public Square() {
     }
+
     public Point getPointPosition() {
         return pointPosition;
     }
@@ -57,9 +58,9 @@ public class Square {
         this.sizeY = sizeY;
     }
 
-    
-    
-    
-    
-    
+    @Override
+    public String toString() {
+        return "Square{" + "identification=" + identification + ", pointPosition=" + pointPosition + ", sizeX=" + sizeX + ", sizeY=" + sizeY + '}';
+    }
+
 }

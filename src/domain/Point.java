@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package domain;
 
 /**
@@ -11,6 +10,7 @@ package domain;
  * @author Fabian
  */
 public class Point {
+
     private int x;
     private int y;
 
