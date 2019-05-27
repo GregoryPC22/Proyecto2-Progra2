@@ -7,6 +7,7 @@ package threads;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import static threadsandgraphics.Test.myLand;
 import visual.LandFrame;
 
 /**
@@ -16,11 +17,11 @@ import visual.LandFrame;
 public class RepaintLandThread extends Thread {
 
     //variables
-    private LandFrame landFrame;
+//    private LandFrame landFrame;
     private int paintTime;
 
-    public RepaintLandThread(LandFrame landFrame, int paintTime) {
-        this.landFrame = landFrame;
+    public RepaintLandThread(int paintTime) {
+//        this.landFrame = myLand;
         this.paintTime = paintTime;
     }
 
@@ -31,7 +32,7 @@ public class RepaintLandThread extends Thread {
             try {
                 //sleep until next repaint
                 this.sleep(paintTime);
-                landFrame.paintAgain();
+                myLand.paintAgain();
 
             } catch (InterruptedException ex) {
                 Logger.getLogger(RepaintLandThread.class.getName()).log(Level.SEVERE, null, ex);

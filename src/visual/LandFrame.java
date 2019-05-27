@@ -2,6 +2,7 @@ package visual;
 
 import domain.Square;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -9,9 +10,13 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JTextField;
 import static threads.SquareThread.play;
+import threadsandgraphics.Test;
+import static threadsandgraphics.Test.squareList;
 
 /**
  *
@@ -19,54 +24,67 @@ import static threads.SquareThread.play;
  */
 public class LandFrame extends JFrame implements ActionListener {
 
-    //variables
-    public ArrayList<Square> mySquares;
-    public int lanes;
+    public static int lanes = 5;
     private int count;
+    Test t = new Test();
+
+    private JComboBox cbVelocity = new JComboBox();
+    private JTextField tfQuantity = new JTextField("quantity");
+    private JTextField tFleans = new JTextField("Carriles");
+    private JButton buttonCreate = new JButton("Create");
+    private JTextField tfBarrier = new JTextField("Carriles");
+    private JButton buttonBarrier = new JButton("Barrier");
+    private JButton buttonSimulation = new JButton("Simulation");
+    private JButton buttonRevert = new JButton("Revert");
     private JButton buttonInterrupt = new JButton("Interrupt");
+    private JLabel button = new JLabel("");
 
     //constructor
-    public LandFrame(ArrayList<Square> mySquares, int lanes) {
+    public LandFrame() {
         super("Shape");
 
-        this.mySquares = mySquares;
-        this.lanes = lanes;
-        this.setSize(1300, 750);
+        this.setSize(1820, 980);
+        this.setLocation(50, 50);
         this.setVisible(true);
 
-        JTextField tFSpeed = new JTextField();
-        tFSpeed.setBounds(1000, 100, 100, 50);
-        this.add(tFSpeed);
+        cbVelocity.setBounds(1400, 100, 75, 50);
+        cbVelocity.addItem("Lento");
+        cbVelocity.addItem("Normal");
+        cbVelocity.addItem("Rápido");
+        cbVelocity.addItem("Muy rápido");
+        this.add(cbVelocity);
 
-        JTextField tFValue = new JTextField();
-        tFValue.setName("Value");
-        tFValue.setBounds(1110, 100, 100, 50);
-        this.add(tFValue);
+        tfQuantity.setBounds(1480, 100, 75, 50);
+        this.add(tfQuantity);
 
-        JButton buttonCreate = new JButton("Create");
-        buttonCreate.setBounds(1000, 170, 210, 50);
+        tFleans.setBounds(1560, 100, 75, 50);
+        this.add(tFleans);
+
+        buttonCreate.addActionListener(this);
+        buttonCreate.setBounds(1400, 170, 235, 50);
         this.add(buttonCreate);
 
-        JButton buttonBarrier = new JButton("Barrier");
-        buttonBarrier.setBounds(1000, 240, 100, 50);
+        tfBarrier.setBounds(1400, 240, 115, 50);
+        this.add(tfBarrier);
+
+        buttonBarrier.addActionListener(this);
+        buttonBarrier.setBounds(1520, 240, 115, 50);
         this.add(buttonBarrier);
 
-        JButton buttonRevert = new JButton("Revert");
-        buttonRevert.setBounds(1110, 240, 100, 50);
-        this.add(buttonRevert);
-
-        JTextField tFCarriles = new JTextField();
-        tFCarriles.setName("Carriles");
-        tFCarriles.setBounds(1000, 310, 100, 50);
-        this.add(tFCarriles);
-
-        JButton buttonSimulation = new JButton("Simulation");
-        buttonSimulation.setBounds(1110, 310, 100, 50);
+        buttonSimulation.addActionListener(this);
+        buttonSimulation.setBounds(1400, 300, 115, 50);
         this.add(buttonSimulation);
 
+        buttonRevert.addActionListener(this);
+        buttonRevert.setBounds(1520, 300, 115, 50);
+        this.add(buttonRevert);
+
         buttonInterrupt.addActionListener(this);
-        buttonInterrupt.setBounds(1000, 380, 210, 50);
+        buttonInterrupt.setBounds(1400, 370, 235, 50);
         this.add(buttonInterrupt);
+
+        button.setBounds(1400, 440, 235, 50);
+        this.add(button);
 
         this.addMouseListener(new IH());
 
@@ -84,12 +102,12 @@ public class LandFrame extends JFrame implements ActionListener {
             } else {
                 g.setColor(new Color(162, 162, 162));
             }
-            g.fillRect(x, 100, 100, 600);
+            g.fillRect(x, 100, 100, 800);
             x += 100;
         }
-        for (Square mySquare : mySquares) {
+        for (Square mySquare : squareList) {
             //el azul es el lento
-            if (mySquare.identification.equals("Thread-1")) {
+            if (mySquare.identification.equals("Square")) {
                 g.setColor(Color.blue);
             }
             //el rojo es el rapido
@@ -98,12 +116,14 @@ public class LandFrame extends JFrame implements ActionListener {
             }
             //el rojo es el rapido
             if (mySquare.identification.equals("Thread-3")) {
-                g.setColor(Color.green);
+                g.setColor(Color.YELLOW);
             }
             //el rojo es el rapido
             if (mySquare.identification.equals("Thread-4")) {
-                g.setColor(Color.YELLOW);
+                g.setColor(Color.black);
             }
+            else
+                g.setColor(Color.red);
             g.fillRect(mySquare.getPointPosition().getX(), mySquare.getPointPosition().getY(), mySquare.getSizeX(), mySquare.getSizeY());
         } //end for
     }
@@ -122,6 +142,31 @@ public class LandFrame extends JFrame implements ActionListener {
                 play = true;
             }
             count++;
+        }
+
+        if (ae.getSource() == buttonBarrier) {
+
+        }
+
+        if (ae.getSource() == buttonCreate) {
+            if (!tFleans.getText().equals("Carriles")) {
+                int variable = Integer.parseInt(tFleans.getText());
+                if (variable >= 5 && variable < 13) {
+                    lanes = variable;
+                }
+            }
+            if (!tfQuantity.getText().equals("quantity")) {
+                t.createThreads(Integer.parseInt(tfQuantity.getText()));
+                t.startThreads((String) cbVelocity.getSelectedItem());
+            }
+        }
+
+        if (ae.getSource() == buttonRevert) {
+
+        }
+
+        if (ae.getSource() == buttonSimulation) {
+
         }
     }
 
