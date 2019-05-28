@@ -1,7 +1,7 @@
 package threads;
 
 import domain.Point;
-import domain.Square;
+import domain.Figure;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -11,17 +11,17 @@ import static visual.LandFrame.revertCheck;
 public class SquareThread extends Thread {
 
     //variables
-    private Square mySquare;
+    private Figure myFigure;
     private int delayTime;
     public static boolean play = true;
     public static int xmlInit = 0;
-    private ArrayList<Square> squareList;
+    private ArrayList<Figure> figureList;
     
-    public SquareThread(Square mySquare, int delayTime, ArrayList<Square> squareList) {
-        super(mySquare.identification);
-        this.mySquare = mySquare;
+    public SquareThread(Figure myFigure, int delayTime, ArrayList<Figure> squareList) {
+        super(myFigure.identification);
+        this.myFigure = myFigure;
         this.delayTime = delayTime;
-        this.squareList = squareList;
+        this.figureList = squareList;
     }
 
     public SquareThread() {
@@ -29,7 +29,7 @@ public class SquareThread extends Thread {
 
     @Override
     public void run() {
-        int i = mySquare.getPointPosition().getY();
+        int i = myFigure.getPointPosition().getY();
         while (i >= 100) {
             if (play == true) {
                 try {
@@ -38,17 +38,17 @@ public class SquareThread extends Thread {
                     //sleep for the animation
                     sleep(delayTime);
                     //comprueba la posicion de las otras figuras en la lista
-                    for (int j = 0; j < squareList.size(); j++) {
-                        if (squareList.get(j) != mySquare) { //la figura se ignora a si misma en la lista
+                    for (int j = 0; j < figureList.size(); j++) {
+                        if (figureList.get(j) != myFigure) { //la figura se ignora a si misma en la lista
                             if(revertCheck==false){
-                                if ((squareList.get(j).getPointPosition().getX()) == (mySquare.getPointPosition().getX())
-                                        && (squareList.get(j).getPointPosition().getY()) == (mySquare.getPointPosition().getY() - 60)) //comprueba posiciones
+                                if ((figureList.get(j).getPointPosition().getX()) == (myFigure.getPointPosition().getX())
+                                        && (figureList.get(j).getPointPosition().getY()) == (myFigure.getPointPosition().getY() - (figureList.get(j).getSizeY()+10) )) //comprueba posiciones
                                 {
                                     checkPos = true; //si cambia a true hay alguien en esa posicion
                                 }
                             }else{ //comprueba cuando reverse esta activo
-                                if ((squareList.get(j).getPointPosition().getX()) == (mySquare.getPointPosition().getX())
-                                    && (squareList.get(j).getPointPosition().getY()) == (mySquare.getPointPosition().getY() + 60)) //comprueba posiciones en reversa
+                                if ((figureList.get(j).getPointPosition().getX()) == (myFigure.getPointPosition().getX())
+                                    && (figureList.get(j).getPointPosition().getY()) == (myFigure.getPointPosition().getY() + (myFigure.getSizeY()+10) )) //comprueba posiciones en reversa
                                 {
                                 checkPos = true; //si cambia a true hay alguien en esa posicion
                                 }
@@ -58,24 +58,24 @@ public class SquareThread extends Thread {
                     
                     if(barrierCheck == true){
                         if(revertCheck==true){
-                            if(mySquare.getPointPosition().getY()+50==270)
+                            if(myFigure.getPointPosition().getY()+(myFigure.getSizeY())==270)
                                 checkPos = true;
                         }//comprueba cuando la figura va en reversa y toca la barrera
-                        else if(mySquare.getPointPosition().getY()==270)
+                        else if(myFigure.getPointPosition().getY()==280)
                             checkPos = true; //si cambia es porque choca contra la barrera
                     }//comprueba estado de la barrera
                     
                     if (checkPos == true) { //duerme e imprime en el mismo lugar
                         sleep(delayTime * 4);
-                        mySquare.setPointPosition(new Point(mySquare.getPointPosition().getX(), mySquare.getPointPosition().getY()));
+                        myFigure.setPointPosition(new Point(myFigure.getPointPosition().getX(), myFigure.getPointPosition().getY()));
                     }else if(revertCheck==true){ //si revert es true lo dibuja al contrario
                         if(i!=700){//diferente al punto de partida
-                            mySquare.setPointPosition(new Point(mySquare.getPointPosition().getX(), mySquare.getPointPosition().getY() + 1));
+                            myFigure.setPointPosition(new Point(myFigure.getPointPosition().getX(), myFigure.getPointPosition().getY() + 1));
                             i++;
                         }else //si la figura esta en la posicion inicial la deja ahi hasta que revert se desactive
-                            mySquare.setPointPosition(new Point(mySquare.getPointPosition().getX(), mySquare.getPointPosition().getY()));
+                            myFigure.setPointPosition(new Point(myFigure.getPointPosition().getX(), myFigure.getPointPosition().getY()));
                     }else{ //imprime en la siguiente posicion y avanza el ciclo
-                        mySquare.setPointPosition(new Point(mySquare.getPointPosition().getX(), mySquare.getPointPosition().getY() - 1));
+                        myFigure.setPointPosition(new Point(myFigure.getPointPosition().getX(), myFigure.getPointPosition().getY() - 1));
                         i--;
                     }
                     

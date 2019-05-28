@@ -1,17 +1,20 @@
 package visual;
 
-import domain.Square;
+import domain.Figure;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
+import javax.imageio.ImageIO;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
-import threads.SquareThread;
 import static threads.SquareThread.play;
 
 /**
@@ -21,20 +24,27 @@ import static threads.SquareThread.play;
 public class LandFrame extends JFrame implements ActionListener {
 
     //variables
-    public ArrayList<Square> mySquares;
+    public ArrayList<Figure> MyFigures;
     public int lanes;
     private int count;
     private JButton buttonInterrupt;
     private JButton buttonBarrier;
     private JButton buttonRevert;
+    private JCheckBox checkBoxImages;
     public static boolean barrierCheck;
     public static boolean revertCheck;
+    public static boolean imagesCheck;
+    private ArrayList <BufferedImage> ultraSpeedList;
+    private ArrayList <BufferedImage> fastSpeedList;
+    private ArrayList <BufferedImage> mediumSpeedList;
+    private ArrayList <BufferedImage> slowSpeedList;
+    private ArrayList <BufferedImage> barrierList;
+    private int imageMovement;
 
     //constructor
-    public LandFrame(ArrayList<Square> mySquares, int lanes) {
+    public LandFrame(ArrayList<Figure> MyFigures, int lanes) throws IOException {
         super("Shape");
-
-        this.mySquares = mySquares;
+        this.MyFigures = MyFigures;
         this.lanes = lanes;
         this.setSize(1300, 750);
         this.setVisible(true);
@@ -79,10 +89,45 @@ public class LandFrame extends JFrame implements ActionListener {
         buttonInterrupt.setBounds(1000, 380, 210, 50);
         this.add(buttonInterrupt);
         
-        
+        checkBoxImages = new JCheckBox("Images");
+        checkBoxImages.addActionListener(this);
+        checkBoxImages.setBounds(1000, 450, 210, 50);
+        this.add(checkBoxImages);
 
         this.addMouseListener(new IH());
-
+        
+        //Imagenes para objetos con velocidad ultraFast
+        ultraSpeedList = new ArrayList<>();
+        ultraSpeedList.add(ImageIO.read(getClass().getResourceAsStream("/imgs/police1.png")));
+        ultraSpeedList.add(ImageIO.read(getClass().getResourceAsStream("/imgs/police2.png")));
+        ultraSpeedList.add(ImageIO.read(getClass().getResourceAsStream("/imgs/police3.png")));
+        
+        //Imagenes para objetos con velocidad fast
+        fastSpeedList = new ArrayList<>();
+        fastSpeedList.add(ImageIO.read(getClass().getResourceAsStream("/imgs/car1.png")));
+        fastSpeedList.add(ImageIO.read(getClass().getResourceAsStream("/imgs/car1.png")));
+        fastSpeedList.add(ImageIO.read(getClass().getResourceAsStream("/imgs/car1.png")));
+        
+        
+        //Imagenes para objetos con velocidad medium
+        mediumSpeedList = new ArrayList<>();
+        mediumSpeedList.add(ImageIO.read(getClass().getResourceAsStream("/imgs/trash.png")));
+        mediumSpeedList.add(ImageIO.read(getClass().getResourceAsStream("/imgs/trash.png")));
+        mediumSpeedList.add(ImageIO.read(getClass().getResourceAsStream("/imgs/trash.png")));
+        
+        //Imagenes para objetos con velocidad slow
+        slowSpeedList = new ArrayList<>();
+        slowSpeedList.add(ImageIO.read(getClass().getResourceAsStream("/imgs/truck1.png")));
+        slowSpeedList.add(ImageIO.read(getClass().getResourceAsStream("/imgs/truck1.png")));
+        slowSpeedList.add(ImageIO.read(getClass().getResourceAsStream("/imgs/truck1.png")));
+        
+        barrierList = new ArrayList<>();
+        barrierList.add(ImageIO.read(getClass().getResourceAsStream("/imgs/laser1.png")));
+        barrierList.add(ImageIO.read(getClass().getResourceAsStream("/imgs/laser2.png")));
+        barrierList.add(ImageIO.read(getClass().getResourceAsStream("/imgs/laser3.png")));
+        
+        imageMovement = 0;
+        
         count = 0;
 
     }//LandFrame
@@ -103,33 +148,63 @@ public class LandFrame extends JFrame implements ActionListener {
         }
         
         //dibuja la barrera
-        if(barrierCheck){
-            g.setColor(Color.magenta);
-            g.drawLine(615, 270, 80, 270);
-        }
+        if(imagesCheck==false){
+            if(barrierCheck){
+                g.setColor(Color.magenta);
+                g.fillRect(80, 270, 540, 10);
+            }
+            else{
+                g.setColor(Color.black);
+                g.drawRect(80, 270, 540, 10);
+            }
+        }//imagesCheck==false
         else{
-            g.setColor(Color.black);
-            g.drawLine(615, 270, 80, 270);
-        }
+            if(barrierCheck){
+                g.drawImage(barrierList.get(imageMovement), 80, 270, 540, 10, null);
+            }
+            else{
+                g.setColor(Color.black);
+                g.drawRect(80, 270, 540, 10);
+            }
+        }//imagesCheck true
         
-        for (Square mySquare : mySquares) {
-            //el azul es el lento
-            if (mySquare.identification.equals("Thread-1")) {
-                g.setColor(Color.blue);
-            }
-            //el rojo es el rapido
-            if (mySquare.identification.equals("Thread-2")) {
-                g.setColor(Color.red);
-            }
-            //el rojo es el rapido
-            if (mySquare.identification.equals("Thread-3")) {
-                g.setColor(Color.green);
-            }
-            //el rojo es el rapido
-            if (mySquare.identification.equals("Thread-4")) {
-                g.setColor(Color.YELLOW);
-            }
-            g.fillRect(mySquare.getPointPosition().getX(), mySquare.getPointPosition().getY(), mySquare.getSizeX(), mySquare.getSizeY());
+        for (Figure myFigure : MyFigures) {
+            if(imagesCheck==false){
+                if (myFigure.getSpeed()==25) {
+                    g.setColor(Color.blue);
+                    g.fillOval(myFigure.getPointPosition().getX(), myFigure.getPointPosition().getY(), myFigure.getSizeX(), myFigure.getSizeY());
+                }
+                if (myFigure.getSpeed()==50) {
+                    g.setColor(Color.red);
+                    g.fillOval(myFigure.getPointPosition().getX(), myFigure.getPointPosition().getY(), myFigure.getSizeX(), myFigure.getSizeY());
+                }
+                if (myFigure.getSpeed()==75) {
+                    g.setColor(Color.green);
+                    g.fillRect(myFigure.getPointPosition().getX(), myFigure.getPointPosition().getY(), myFigure.getSizeX(), myFigure.getSizeY());
+                }
+                if (myFigure.getSpeed()==100) {
+                    g.setColor(Color.yellow);
+                    g.fillRect(myFigure.getPointPosition().getX(), myFigure.getPointPosition().getY(), myFigure.getSizeX(), myFigure.getSizeY());
+                }
+            }//if imagesCheck
+            else if(imagesCheck==true){
+                if (myFigure.getSpeed()==25) {
+                    g.drawImage(ultraSpeedList.get(imageMovement), myFigure.getPointPosition().getX(), myFigure.getPointPosition().getY(), myFigure.getSizeX(), myFigure.getSizeY(), null);
+                }
+                if (myFigure.getSpeed()==50) {
+                    g.drawImage(fastSpeedList.get(imageMovement), myFigure.getPointPosition().getX(), myFigure.getPointPosition().getY(), myFigure.getSizeX(), myFigure.getSizeY(), null);
+                }
+                if (myFigure.getSpeed()==75) {
+                    g.drawImage(mediumSpeedList.get(imageMovement), myFigure.getPointPosition().getX(), myFigure.getPointPosition().getY(), myFigure.getSizeX(), myFigure.getSizeY(), null);
+                }
+                if (myFigure.getSpeed()==100) {
+                    g.drawImage(slowSpeedList.get(imageMovement), myFigure.getPointPosition().getX(), myFigure.getPointPosition().getY(), myFigure.getSizeX(), myFigure.getSizeY(), null);
+                }
+            }// else if imagesCheck=true
+            imageMovement++;
+            
+            if(imageMovement==3)
+                imageMovement=0;
         } //end for
     }
 
@@ -162,6 +237,14 @@ public class LandFrame extends JFrame implements ActionListener {
                 revertCheck=true;
             } else {
                 revertCheck = false;
+            }
+        }
+        
+        if (ae.getSource() == checkBoxImages) {
+            if (imagesCheck==false) {
+                imagesCheck=true;
+            } else {
+                imagesCheck = false;
             }
         }
     }
