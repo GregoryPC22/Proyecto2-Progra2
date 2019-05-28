@@ -5,7 +5,7 @@
 package data;
 
 import domain.Point;
-import domain.Square;
+import domain.Figure;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -64,7 +64,7 @@ public class XMLStudentManager {
     }
 
     //metodo para insertar un nuevo estudiante en el documento xml
-    public void insertSquare(Square square) throws IOException {
+    public void insertSquare(Figure square) throws IOException {
         //INSERTAMOS EN EL DOCUMENTO EN MEMORIA
         //para insertar en xml, primero se crean los elementos
 
@@ -90,10 +90,14 @@ public class XMLStudentManager {
 
         Element eSizeY = new Element("sizey");
         eSizeY.addContent(String.valueOf(square.getSizeY()));
+        
+        Element eSpeed = new Element("speed");
+        eSpeed.addContent(String.valueOf(square.getSpeed()));
 
         eSquare.addContent(ePointPosition);
         eSquare.addContent(eSizeX);
         eSquare.addContent(eSizeY);
+        eSquare.addContent(eSpeed);
 
         //AGREGAMOS AL ROOT
         this.root.addContent(eSquare);
@@ -112,7 +116,7 @@ public class XMLStudentManager {
     }
 
     //metodo para obtener todos los estudiantes en un arreglo
-    public Square[] getAllSquares() {
+    public Figure[] getAllSquares() {
         //obtenemos la cantidad de estudiantes
         int elementsQuantity = this.root.getContentSize();
 
@@ -120,7 +124,7 @@ public class XMLStudentManager {
         List elementList = this.root.getChildren();
 
         //definimos el tamano del arreglo
-        Square[] squaresArray = new Square[elementsQuantity];
+        Figure[] squaresArray = new Figure[elementsQuantity];
 
         //recorremos la lista para ir creando los objetos de tipo estudiante
         int count = 0;
@@ -128,27 +132,28 @@ public class XMLStudentManager {
             //transformo el object
             Element currentElement = (Element) currentObject;
 
-            //crear el objeto Square
-            Square square = new Square();
+            //crear el objeto Figure
+            Figure figure = new Figure();
 
             //establezco el id
-            square.setIdentification(currentElement.getAttributeValue("identification"));
+            figure.setIdentification(currentElement.getAttributeValue("identification"));
 
             int sqPointX = Integer.parseInt(currentElement.getChild("pointposition").getChild("x").getValue());
             int sqPointY = Integer.parseInt(currentElement.getChild("pointposition").getChild("y").getValue());
 
             Point sqPoint = new Point(sqPointX, sqPointY);
             //establezco el nombre
-            square.setPointPosition(sqPoint);
+            figure.setPointPosition(sqPoint);
 
             //establezco la nota
-            square.setSizeX(Integer.parseInt(currentElement.getChild("sizex").getValue()));
+            figure.setSizeX(Integer.parseInt(currentElement.getChild("sizex").getValue()));
 
             //establezco la nota
-            square.setSizeY(Integer.parseInt(currentElement.getChild("sizey").getValue()));
-
+            figure.setSizeY(Integer.parseInt(currentElement.getChild("sizey").getValue()));
+            
+            figure.setSpeed(Integer.parseInt(currentElement.getChild("speed").getValue()));
             //guardar en el arreglo
-            squaresArray[count++] = square;
+            squaresArray[count++] = figure;
         }//end for
         return squaresArray;
     }
